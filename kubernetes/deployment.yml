@@ -5,7 +5,6 @@ metadata:
   labels:
     app: "my-app"
 spec:
-  replicas: 3
   selector:
     matchLabels:
       app: "my-app-pod"
@@ -17,6 +16,29 @@ spec:
       containers:
       - name: "my-app-api"
         image: "husseinawala/my-app:latest"
+        ports:
+        - name: "api"
+          containerPort: 80
+        startupProbe:
+          httpGet:
+            port: "api"
+            path: /
+          failureThreshold: 20
+          periodSeconds: 6
+        readinessProbe:
+          httpGet:
+            port: "api"
+            path: /
+          initialDelaySeconds: 3
+          periodSeconds: 3
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            port: "api"
+            path: /
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          failureThreshold: 4
         envFrom:
           - configMapRef:
               name: "my-app-config"
